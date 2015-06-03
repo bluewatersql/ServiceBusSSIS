@@ -64,7 +64,9 @@ namespace BluewaterSQL.DTS.ServiceBus.ConnectionManager
 
         bool IDtsConnectionManagerUI.New(IWin32Window parentWindow, Connections connections, ConnectionManagerUIArgs connectionUIArg)
         {
+#pragma warning disable 612, 618
             IDtsClipboardService clipboardService = this._serviceProvider.GetService(typeof(IDtsClipboardService)) as IDtsClipboardService;
+#pragma warning restore 612, 618
             if (clipboardService != null && clipboardService.IsPasteActive)
                 return true;
             else

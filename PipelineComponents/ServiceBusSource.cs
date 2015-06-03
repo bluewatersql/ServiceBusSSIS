@@ -30,15 +30,15 @@ namespace BluewaterSQL.DTS.ServiceBus.DataFlow
 
         private bool bCancel;
         private bool isConnected;
-        
-        private string AssemblyName { get { return ComponentMetaData.CustomPropertyCollection["Assembly"].Value; } }
-        private string ClassName { get { return ComponentMetaData.CustomPropertyCollection["Class"].Value; } }
-        private int MaxStringLength { get { return ComponentMetaData.CustomPropertyCollection["MaxStringLength"].Value; } }
-        public int ServiceBusTimeout { get { return ComponentMetaData.CustomPropertyCollection["ServiceBusTimeout"].Value; } }
-        public int MessageCap { get { return ComponentMetaData.CustomPropertyCollection["MessageCap"].Value; } }
-        public int BatchSize { get { return ComponentMetaData.CustomPropertyCollection["BatchSize"].Value; } }
-        public int MaxRetrieveAttempts { get { return ComponentMetaData.CustomPropertyCollection["MaxRetrieveAttempts"].Value; } }
-        public bool AutoComplete { get { return ComponentMetaData.CustomPropertyCollection["AutoComplete"].Value; } }
+
+        private string AssemblyName { get { return GetPropertyValue<string>("Assembly"); } }
+        private string ClassName { get { return GetPropertyValue<string>("Class"); } }
+        private int MaxStringLength { get { return GetPropertyValue<int>("MaxStringLength", s => int.Parse(s)); } }
+        public int ServiceBusTimeout { get { return GetPropertyValue<int>("ServiceBusTimeout", s => int.Parse(s)); } }
+        public int MessageCap { get { return GetPropertyValue<int>("MessageCap", s => int.Parse(s)); } }
+        public int BatchSize { get { return GetPropertyValue<int>("BatchSize", s => int.Parse(s)); } }
+        public int MaxRetrieveAttempts { get { return GetPropertyValue<int>("MaxRetrieveAttempts", s => int.Parse(s)); } }
+        public bool AutoComplete { get { return GetPropertyValue<bool>("AutoComplete", s => bool.Parse(s)); } }
         #endregion
 
         #region Set-Up
@@ -619,6 +619,22 @@ namespace BluewaterSQL.DTS.ServiceBus.DataFlow
         {
             throw new NotSupportedException();
         }
+        #endregion
+
+        #region Property Helper
+
+        private T GetPropertyValue<T>(string propertyName, Func<string, T> converter = null)
+        {
+            if (converter == null)
+            {
+                return (T)ComponentMetaData.CustomPropertyCollection[propertyName].Value;
+            }
+            else
+            {
+                return converter(ComponentMetaData.CustomPropertyCollection[propertyName].Value.ToString());
+            }
+        }
+
         #endregion
     }
 }
